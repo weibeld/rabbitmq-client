@@ -6,6 +6,7 @@ if (!amqpUri) throw new Error('first argument must be AMQP URI');
 
 let connection;
 let channel;
+let cli;
 
 /* Connect to RabbitMQ and create channel */
 amqp.connect(amqpUri)
@@ -21,17 +22,14 @@ amqp.connect(amqpUri)
     })
     .catch(err => console.log(err));
 
-
-/* Set up CLI */
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal: null
-});
-rl.setPrompt('> ');
-rl.on('line', parseCommand);
-
 function startCli() {
+    cli = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+        terminal: null
+    });
+    cli.setPrompt('> ');
+    cli.on('line', parseCommand);
     console.log(`
 This program allows you to send messages to a queue of the specified RabbitMQ instance.
 Queues are assumed to be non-exclusive, non-durable, and auto-delete. Queues are created
@@ -40,7 +38,7 @@ with these parameters if they don't exist.
 Format: QUEUE MESSAGE
 Type 'quit' to exit.
 `);
-    rl.prompt();
+    cli.prompt();
 }
 
 function parseCommand(cmd) {
@@ -48,7 +46,7 @@ function parseCommand(cmd) {
     else if (cmd !== '') {
         const [ queue, ...msg ] = cmd.split(' ');
         send(queue, msg.join(' '));
-        rl.prompt();
+        cli.prompt();
     }
 }
 
@@ -67,5 +65,3 @@ async function close() {
     console.log('Connection closed')
     process.exit();
 }
-
-

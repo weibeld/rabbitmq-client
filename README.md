@@ -35,3 +35,5 @@ For example:
 ~~~
 > my-queue This is my message
 ~~~
+
+This sends the message `This is my message` to the queue `my-queue`.
